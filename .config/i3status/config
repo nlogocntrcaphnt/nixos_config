@@ -1,0 +1,49 @@
+general {
+	colors = true
+	interval = 1
+	output_format = i3bar
+	color_good = "#74857c"
+	color_degraded = "#74857c"
+	color_bad = "#74857c"
+}
+
+
+order += "disk /"
+order += "cpu_usage"
+order += "volume master"
+order += "tztime local"
+
+wireless wlan0 {
+	format_up = " WiFi: %ip %quality %essid %bitrate "
+	format_down = " WiFi: (/) "
+}
+
+ethernet enp9s0 {
+	format_up = " LAN: %ip %speed "
+	format_down = " LAN: (/) "
+}
+
+battery 0 {
+	format = " Power: %status %percentage %remaining left "
+	path = "/sys/class/power_supply/BAT0/uevent"
+	low_threshold = 20
+}
+
+tztime local {
+	format = " %m/%d/%y %H:%M :التاريخ والوقت "
+}
+
+cpu_usage {
+	format = " %usage :المعالج "
+}
+
+disk "/" {
+	format = " %free "
+}
+
+volume master {
+	format = " %volume :جهارة الصوت "
+	device = "default"
+	mixer = "Master"
+	mixer_idx = 0
+}
