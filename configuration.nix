@@ -5,10 +5,10 @@
 { config, pkgs, ... }:
 
 {
-	imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+	imports = [ 
+	# Include the results of the hardware scan.
+	./hardware-configuration.nix
+	];
 
 	# Bootloader.
 	boot.loader.systemd-boot.enable = true;
@@ -32,58 +32,58 @@
 
 	i18n.extraLocaleSettings = {
 		LC_ADDRESS = "el_GR.UTF-8";
-    	LC_IDENTIFICATION = "el_GR.UTF-8";
-    	LC_MEASUREMENT = "el_GR.UTF-8";
+		LC_IDENTIFICATION = "el_GR.UTF-8";
+		LC_MEASUREMENT = "el_GR.UTF-8";
 		LC_MONETARY = "el_GR.UTF-8";
-    	LC_NAME = "el_GR.UTF-8";
-    	LC_NUMERIC = "el_GR.UTF-8";
-    	LC_PAPER = "el_GR.UTF-8";
-    	LC_TELEPHONE = "el_GR.UTF-8";
-    	LC_TIME = "el_GR.UTF-8";
+		LC_NAME = "el_GR.UTF-8";
+		LC_NUMERIC = "el_GR.UTF-8";
+		LC_PAPER = "el_GR.UTF-8";
+		LC_TELEPHONE = "el_GR.UTF-8";
+		LC_TIME = "el_GR.UTF-8";
 	};
 
 	# Configure keymap in X11
 	services.xserver.xkb = {
-    	layout = "us";
-    	variant = "";
-  	};
+		layout = "us";
+		variant = "";
+	};
 
 	# Define a user account. Don't forget to set a password with ‘passwd’.
 	users.users.polyphemus = {
-    	isNormalUser = true;
-    	description = "Constantine";
-    	extraGroups = [ "networkmanager" "wheel" ];
-    	packages = with pkgs; [
+		isNormalUser = true;
+		description = "Constantine";
+		extraGroups = [ "networkmanager" "wheel" ];
+		packages = with pkgs; [
 		gedit
 		rxvt-unicode
 		alsa-utils
 		yazi
 		fastfetch
-    	];
-  	};
+		];
+	};
 
   # Allow unfree packages
 	nixpkgs.config.allowUnfree = true;
 
 
 	services.getty = {
-    	autologinUser = "polyphemus";
-    	autologinOnce = true;
+		autologinUser = "polyphemus";
+		autologinOnce = true;
 	};
 	environment.loginShellInit = ''
-    [[ "$(tty)" == /dev/ttyl ]] & sway
+	[[ "$(tty)" == /dev/ttyl ]] & sway
 	'';
 
 	security = {
-    	pam.services = {
+		pam.services = {
 			login = {
 # startSession = true;
 				enableGnomeKeyring = true;
 			};
-      # gnome keyring even without display manager
+# gnome keyring even without display manager
 			logind.enableGnomeKeyring = true;
-      # sshd.enableGnomeKeyring = true;
-    	};
+# sshd.enableGnomeKeyring = true;
+		};
 		polkit = {
 			enable = true;
 		};
@@ -91,12 +91,35 @@
 
 	services.gvfs.enable = true;	
 
-	programs.sway = {
-    	enable = true;
-    	wrapperFeatures.gtk = true;
-  	};
-
 	hardware.graphics.enable = true;
+
+	programs.sway = {
+		enable = true;
+		wrapperFeatures.gtk = true;
+		extraPackages = with pkgs; [
+			wl-clipboard
+			mako
+			i3status
+			libinput
+			grim
+			slurp
+						
+			foot
+
+			wmenu
+			dmenu
+		];
+		extraSessionCommands = ''
+			export SDL_VIDEODRIVER=wayland
+			export QT_QPA_PLATFORM=wayland
+			export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
+			export _JAVA_AWT_WM_NONREPARENTING=1
+			export MOZ_ENABLE_WAYLAND=1
+		'';
+	};
+
+	programs.xwayland.enable = true;
+	
 	
 	services.pcscd.enable = true;
 	programs.gnupg.agent = {
@@ -122,17 +145,17 @@
 
 		neovim
 
-    	xfce.thunar    
+		xfce.thunar
+		xfce.tumbler
+		ffmpegthumbnailer
 		
-		wl-clipboard
-		mako
-    	git
-    	i3status
-    	libinput
-
+		git
 		rsync
+		yt-dlp
+		aria2
 
 		telegram-desktop
+
 		mpv
 		obs-studio
 		mpd
@@ -144,14 +167,24 @@
 		unzip
 		ntfs3g
 		fuse
-
-		grim
-		slurp
-		
-		dmenu
+		parted
+		btrfs-progs
+		smartmontools
 
 		gnupg
+		
+		ffmpeg-full
+		
+		wineWowPackages.waylandFull
+
+		protonup
+
+		rtorrent
 	];
+
+	environment.sessionVariables = {
+		STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/polyphemus/.steam/root/compatibilitytools.d";
+	};
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
