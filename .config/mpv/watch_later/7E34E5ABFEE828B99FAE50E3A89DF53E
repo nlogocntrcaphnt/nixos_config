@@ -1,0 +1,4 @@
+start=1336.376880
+fullscreen=yes
+vf=vapoursynth=file=%50%/home/kostis/.local/share/SVP4/scripts/c121c56a.py:buffered-frames=4:concurrent-frames=9
+aid=2

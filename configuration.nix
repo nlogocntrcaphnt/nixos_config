@@ -52,19 +52,27 @@
 	users.users.polyphemus = {
 		isNormalUser = true;
 		description = "Constantine";
-		extraGroups = [ "networkmanager" "wheel" ];
+		extraGroups = [ "networkmanager" "wheel" "video" "render" ];
 		packages = with pkgs; [
-		gedit
-		rxvt-unicode
-		alsa-utils
-		yazi
-		fastfetch
+			gedit
+			alsa-utils
+			
+			fastfetch
 		];
 	};
 
   # Allow unfree packages
 	nixpkgs.config.allowUnfree = true;
 
+	nix.settings.experimental-features = [ "nix-command" ];
+
+	system.autoUpgrade.enable = true;
+	system.autoUpgrade.dates = "weekly";
+
+	nix.gc.automatic = true;
+	nix.gc.dates = "daily";
+	nix.gc.options = "--delete-older-than 7d";
+	nix.settings.auto-optimise-store = true;
 
 	services.getty = {
 		autologinUser = "polyphemus";
@@ -89,9 +97,24 @@
 		};
 	};
 
-	services.gvfs.enable = true;	
+	services.gvfs.enable = true;
 
-	hardware.graphics.enable = true;
+	hardware.graphics = {
+		enable = true;
+		enable32Bit = true;
+		extraPackages = with pkgs; [
+			rocmPackages.clr.icd
+      		libva-vdpau-driver
+			libvdpau-va-gl
+			mesa
+		];
+		extraPackages32 = with pkgs.driversi686Linux; [
+			libva-vdpau-driver
+			libvdpau-va-gl
+			mesa
+    	];
+	};
+
 
 	programs.sway = {
 		enable = true;
@@ -119,8 +142,7 @@
 	};
 
 	programs.xwayland.enable = true;
-	
-	
+		
 	services.pcscd.enable = true;
 	programs.gnupg.agent = {
 		enable = true;
@@ -143,18 +165,24 @@
 	environment.systemPackages = with pkgs; [
 		firefox
 
-		neovim
+		pcmanfm
 
-		xfce.thunar
-		xfce.tumbler
-		ffmpegthumbnailer
-		
+		neovim
 		git
+		gnumake
+		
+		killall
+
 		rsync
+
 		yt-dlp
 		aria2
 
 		telegram-desktop
+		discord
+
+		newsboat
+		taskspooler
 
 		mpv
 		obs-studio
@@ -172,15 +200,20 @@
 		smartmontools
 
 		gnupg
-		
+
 		ffmpeg-full
 		
 		wineWowPackages.waylandFull
 
-		protonup
+		protonup-ng
 
 		rtorrent
 	];
+	
+	environment.variables = {
+		ROC_ENABLE_PRE_VEGA = "1";
+		VDPAU_DRIVER = "radeonsi";
+	};
 
 	environment.sessionVariables = {
 		STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/polyphemus/.steam/root/compatibilitytools.d";

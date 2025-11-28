@@ -40,8 +40,10 @@ bindsym $mod+Shift+q kill
 floating_modifier $mod normal
 
 bindsym $mod+Shift+r reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+#bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
+bindsym $mod+Shift+e exec pcmanfm
+bindsym $mod+Shift+b exec firefox
 bindsym Print exec grim -g "$(slurp -d)" - | wl-copy
 bindsym $mod+p  exec grim -g "$(slurp -d)" ~/Pictures/screenshots/$(date +%s).png
 #bindsym $mod+u exec cat ~/Documents/usernames.txt | dmenu -nb '#1D1D1D' -nf '#aaaaaa' -sb '#8a7b70' -sf '#1D1D1D' -fn 'Ohsnap:pixelsize=12' -l 15 | awk '{print $1}' | wl-copy
@@ -53,7 +55,7 @@ bindsym $mod+shift+w exec cat ~/Documents/words_list.txt | dmenu -nb '#1D1D1D' -
 
 input "1278:33:PFU_Limited_HHKB-Hybrid" {
     xkb_layout us,gr
-    xkb_options grp:ctrl_rshift_toggle
+    xkb_options grp:ctrl_shift_toggle
 
 	repeat_rate 50
     repeat_delay 300
@@ -125,20 +127,21 @@ bindsym $mod+Shift+0 move container to workspace $workspace10
 assign [app_id="firefox"] $workspace2
 assign [class="URxvt"] $workspace1
 assign [app_id="mpv"] $workspace1
+assign [class="mpv"] $workspace1
 assign [app_id="foot"] $workspace1
 assign [app_id="org.telegram.desktop"] $workspace3
 
 
-for_window [class="URxvt"] border pixel 10
-for_window [class="URxvt"] floating enable, resize set 700 380 
-
-for_window [app_id="firefox"] border pixel 3
+for_window [app_id="firefox"] border pixel 3, focus
 
 for_window [app_id="foot"] border pixel 14
-for_window [app_id="foot"] floating enable, resize set 600 350
+for_window [app_id="foot"] floating enable, resize set 600 350, focus
 
 for_window [app_id="mpv"] border pixel 4
 for_window [app_id="mpv"] floating enable
+
+for_window [class="mpv"] border pixel 4
+for_window [class="mpv"] floating enable, move up 272, move right 699
 
 # Layout stuff:
 	workspace_layout default
