@@ -13,6 +13,7 @@
 	# Bootloader.
 	boot.loader.systemd-boot.enable = true;
 	boot.loader.efi.canTouchEfiVariables = true;
+	boot.crashDump.enable = true;
 
 	networking.hostName = "cryochamber"; # Define your hostname.
 	# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -54,17 +55,16 @@
 		description = "Constantine";
 		extraGroups = [ "networkmanager" "wheel" "video" "render" ];
 		packages = with pkgs; [
-			gedit
-			alsa-utils
-			
-			fastfetch
+
 		];
 	};
 
   # Allow unfree packages
 	nixpkgs.config.allowUnfree = true;
 
-	nix.settings.experimental-features = [ "nix-command" ];
+	boot.kernelPackages = pkgs.linuxPackages_latest;
+
+	nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 	system.autoUpgrade.enable = true;
 	system.autoUpgrade.dates = "weekly";
@@ -102,18 +102,41 @@
 	hardware.graphics = {
 		enable = true;
 		enable32Bit = true;
-		extraPackages = with pkgs; [
-			rocmPackages.clr.icd
-      		libva-vdpau-driver
-			libvdpau-va-gl
-			mesa
-		];
-		extraPackages32 = with pkgs.driversi686Linux; [
-			libva-vdpau-driver
-			libvdpau-va-gl
-			mesa
-    	];
+#		extraPackages = with pkgs; [
+#			libva
+#			libva-utils
+#			libva-vdpau-driver
+#			libvdpau-va-gl
+#		];
 	};
+
+	hardware.bluetooth = {
+		enable = true;
+		powerOnBoot = true;
+		settings = {
+			General = {
+      # Shows battery charge of connected devices on supported
+      # Bluetooth adapters. Defaults to 'false'.
+				Experimental = true;
+      # When enabled other devices can connect faster to us, however
+      # the tradeoff is increased power consumption. Defaults to
+      # 'false'.
+				FastConnectable = true;
+			};
+			Policy = {
+      # Enable all controllers when they are found. This includes
+      # adapters present on start as well as adapters that are plugged
+      # in later on. Defaults to 'true'.
+				AutoEnable = true;
+			};
+		};
+	};
+
+	services.blueman.enable = true;
+
+	hardware.logitech.wireless.enable = true;
+	hardware.logitech.wireless.enableGraphical = true;
+
 
 
 	programs.sway = {
@@ -148,14 +171,9 @@
 		enable = true;
 		enableSSHSupport = true;
 	};
-	
-	programs.steam.enable = true;
-	programs.steam.gamescopeSession.enable = true;
 
-	programs.gamemode.enable = true;
 
 	fonts.packages = with pkgs; [
-		terminus_font_ttf
 		terminus_font
 		noto-fonts
 		noto-fonts-cjk-sans
@@ -164,12 +182,15 @@
 	# $ nix search wget
 	environment.systemPackages = with pkgs; [
 		firefox
+		ungoogled-chromium
 
 		pcmanfm
+		ffmpegthumbnailer
 
 		neovim
 		git
 		gnumake
+		gedit
 		
 		killall
 
@@ -177,24 +198,28 @@
 
 		yt-dlp
 		aria2
+		nicotine-plus
 
 		telegram-desktop
 		discord
 
 		newsboat
-		taskspooler
 
 		mpv
 		obs-studio
 		mpd
 		ncmpcpp
+		zathura		
+
+		gimp3
 
 		htop
+		lm_sensors
 
 		glib
 		unzip
 		ntfs3g
-		fuse
+		fuse3
 		parted
 		btrfs-progs
 		smartmontools
@@ -202,22 +227,22 @@
 		gnupg
 
 		ffmpeg-full
-		
-		wineWowPackages.waylandFull
+		alsa-utils
 
-		protonup-ng
+		ollama-vulkan
+		codex
 
 		rtorrent
+
+		fastfetch
+		sherlock
 	];
 	
-	environment.variables = {
-		ROC_ENABLE_PRE_VEGA = "1";
-		VDPAU_DRIVER = "radeonsi";
-	};
+#	environment.variables = {
+#		ROC_ENABLE_PRE_VEGA = "1";
+#		VDPAU_DRIVER = "radeonsi";
+#	};
 
-	environment.sessionVariables = {
-		STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/polyphemus/.steam/root/compatibilitytools.d";
-	};
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
